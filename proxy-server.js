@@ -1,10 +1,15 @@
-const proxy = require('redbird')({ port:3000 })
-const express = require('express')
-const app = express()
+const proxy = require('redbird')({ port: 80, xfwd: false })
+// const express = require('express')
+// const app = express()
 let sessions = {}
 
-sessions['first'] = "http://spacecraft-repl.com:4000";
+sessions['first'] = "proxy-fix";
 
-proxy.register('localhost/first', sessions['first'])
-proxy.register('localhost', sessions['first'])
+// proxy.register('spacecraft-repl.com/first', sessions['first'])
+// proxy.register('spacecraft-repl.com/', sessions['first'])
+
+const docker = require('redbird').docker
+docker(proxy).register('spacecraft-repl.com', sessions['first'])
+docker(proxy).register('spacecraft-repl.com/first', sessions['first'])
  
+
