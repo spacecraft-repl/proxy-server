@@ -1,23 +1,17 @@
-const proxy = require('redbird')({
-  port: 80,
-  useTargetHostHeader: true,
-})
+const proxy = require('redbird')({ port: 80, xfwd: false })
+// const express = require('express')
+// const app = express()
+let sessions = {}
 
-const DOMAIN = 'repl.space'
+sessions['first'] = "172.17.0.2:3000"
+sessions['second'] = "172.17.0.3:3000"
 
-let sessions = [
-  {
-    src:    `first.${DOMAIN}`,
-    target: '172.17.0.3:3000',
-  },
-  {
-    src:    `second.${DOMAIN}`,
-    target: '172.17.0.5:3000',
-  },
-]
+// proxy.register('spacecraft-repl.com/first', sessions['first'])
+// proxy.register('spacecraft-repl.com/', sessions['first'])
 
-const registerSessionRoute = ({src, target}) => {
-  proxy.register(src, target, { useTargetHostHeader: true })
-}
+// const docker = require('redbird').docker
+// proxy.register('spacecraft-repl.com', sessions['first'])
+proxy.register('spacecraft-repl.com/first', sessions['first'])
+proxy.register('spacecraft-repl.com/second', sessions['second'])
+ 
 
-sessions.forEach(registerSessionRoute)
