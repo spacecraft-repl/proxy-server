@@ -12,6 +12,7 @@ const proxy = require('redbird')({
         docker.run('proxy-fix', ['--memory=100m', '-it', '--cpus=".2"','--runtime=runsc', '--expose=3000', '-d'], process.stdout, function (err, data, container) {
           // console.log(`data.StatusCode is ${data.StatusCode}}`)
           console.log(`data is ${data}`)
+          console.log(`err is ${err}`)
         });
         console.log(`sessionId is ${sessionId}`)
       }
