@@ -1,26 +1,23 @@
 {
   "name": "proxy-server",
   "version": "1.0.0",
-  "description": "A proxy server for SpaceCraft application. Provides session management and request forwarding to containers.",
-  "main": "proxy-server.js",
+  "description": "A proxy server for the SpaceCraft REPL application. Provides session management and request forwarding to containers.",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/spacecraft-repl/proxy-server.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "spacecraft-repl",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/spacecraft-repl/proxy-server/issues"
   },
   "homepage": "https://github.com/spacecraft-repl/proxy-server#readme",
   "dependencies": {
     "dockerode": "^2.5.7",
-    "express": "^4.16.4",
-    "http-proxy": "^1.17.0",
-    "redbird": "^0.9.0",
-    "socket.io": "^2.2.0"
+    "redbird": "^0.9.0"
   }
 }
