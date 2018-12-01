@@ -29,7 +29,7 @@ const proxy = require('redbird')({
             container.inspect(container.id).then(data => {
               const IPAddress = data.NetworkSettings.IPAddress
               sessions[sessionId] = IPAddress
-              proxy.register('spacecraft-repl',`${sessionId}.${DOMAIN}`)
+              proxy.register('spacecraft-repl.com',`${sessionId}.${DOMAIN}`)
               proxy.register(`${sessionId}.${DOMAIN}`, `${IPAddress}:${PORT}`)
             })
           })
