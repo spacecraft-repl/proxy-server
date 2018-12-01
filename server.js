@@ -1,7 +1,14 @@
 // 'use strict'
+const Docker = require('dockernode')
+// let docker1 = new Docker({ host: 'http://174.138.50.119', port: 80 })
 
 const proxy = require('redbird')({
   port: 80,
+  resolvers: [
+    function(host, url, request) => {
+      console.log(`host is ${host} and url is ${url}`);
+    }
+  ]
 })
 
 const DOMAIN = 'spacecraft-repl.com'
