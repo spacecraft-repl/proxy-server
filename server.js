@@ -1,6 +1,7 @@
 // 'use strict'
-const Docker = require('dockerode')
-let docker = new Docker({socketPath: '/var/run/docker.sock'})
+// const Docker = require('dockerode')
+// let docker = new Docker({socketPath: '/var/run/docker.sock'})
+const exec = require('child_process').exec //, child
 
 const proxy = require('redbird')({
   port: 80,
@@ -9,11 +10,20 @@ const proxy = require('redbird')({
       // console.log(`host is ${host} and url is ${url}`);
       if(host === 'spacecraft-repl.com' && url === '/') {
         let sessionId = Math.floor(Math.random() * 1000)
-        docker.run('proxy-fix', ['--memory=100m', '-it', '--cpus=".2"','--runtime=runsc', '--expose=3000', '-d'], process.stdout, function (err, data, container) {
-          // console.log(`data.StatusCode is ${data.StatusCode}}`)
-          console.log(`data is ${data}`)
-          console.log(`err is ${err}`)
-        });
+        const dockerscript = exec('bash dockerscript.sh ./')
+        // docker.run('proxy-fix', ['--memory=100m', '-it', '--cpus=".2"','--runtime=runsc', '--expose=3000', '-d'], process.stdout, function (err, data, container) {
+        //   // console.log(`data.StatusCode is ${data.StatusCode}}`)
+        //   console.log(`data is ${data}`)
+        //   console.log(`err is ${err}`)
+        // });
+        dockerscript.stdout.on('data', function(data) {
+          console.log(data)
+        })
+
+        // dockerscript.stderr.on('data', function(data) {
+        //   console.log(data)
+        // })
+
         console.log(`sessionId is ${sessionId}`)
       }
     }
