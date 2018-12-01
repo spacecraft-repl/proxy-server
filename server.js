@@ -38,5 +38,5 @@ const proxy = require('redbird')({
   ]
 })
 
-
+console.log(`proxy is ${proxy}`);
 
