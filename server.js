@@ -4,17 +4,17 @@ const proxy = require('redbird')({
   port: 80,
 })
 
-const DOMAIN = 'repl.space'
+const DOMAIN = 'spacecraft-repl.com'
 const PORT   = 3000
 
 let sessions = [
   {
-    src:    `first.${DOMAIN}`,
-    target: `172.17.0.3:${PORT}`,
+    src:    `a.${DOMAIN}`,
+    target: `172.17.0.2:${PORT}`,
   },
   {
-    src:    `second.${DOMAIN}`,
-    target: `172.17.0.5:${PORT}`,
+    src:    `b.${DOMAIN}`,
+    target: `172.17.0.3:${PORT}`,
   },
 ]
 
