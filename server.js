@@ -10,7 +10,7 @@ const proxy = require('redbird')({
       if(host === 'spacecraft-repl.com' && url === '/') {
         let sessionId = Math.floor(Math.random() * 1000)
         docker.run('proxy-fix', ['--memory=100m', '-it', '--cpus=".2"','--runtime=runsc', '--expose=3000', '-d'], process.stdout, function (err, data, container) {
-          console.log(`data.StatusCode is ${data.StatusCode}}`)
+          // console.log(`data.StatusCode is ${data.StatusCode}}`)
           console.log(`data is ${data}`)
         });
         console.log(`sessionId is ${sessionId}`)
