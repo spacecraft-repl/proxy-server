@@ -1,8 +1,15 @@
 // 'use strict'
-// const Docker = require('dockerode')
-// let docker = new Docker({socketPath: '/var/run/docker.sock'})
-// const shell = require('shelljs')
+const Docker = require('dockerode')
+let docker = new Docker({socketPath: '/var/run/docker.sock'})
+
 const execFileSync = require('child_process').execFileSync
+
+const DOMAIN = 'spacecraft-repl.com'
+const PORT   = 3000
+let sessions = {}
+//   [`a.${DOMAIN}`]: `172.17.0.2:${PORT}`,
+//   [`b.${DOMAIN}`]: `172.17.0.3:${PORT}`
+// }
 
 const proxy = require('redbird')({
   port: 80,
@@ -13,20 +20,33 @@ const proxy = require('redbird')({
       if(host === 'spacecraft-repl.com' && url === '/') {
         let sessionId = Math.floor(Math.random() * 1000)
         let containerNetwork = execFileSync('./dockerscript.sh')
-        console.log(containerNetwork["Containers"] + '')
-        // docker.run('proxy-fix', ['--memory=100m', '-it', '--cpus=".2"','--runtime=runsc', '--expose=3000', '-d'], process.stdout, function (err, data, container) {
-        //   // console.log(`data.StatusCode is ${data.StatusCode}}`)
-        //   console.log(`data is ${data}`)
-        //   console.log(`err is ${err}`)
-        // });
-        console.log(`sessionId is ${sessionId}`)
+        docker.createContainer({
+          Image: 'proxy-fix',
+          Tty: false,
+          ExposedPorts: { "3000/tcp": {} },
+          HostConfig: {
+            Runtime: 'runsc',
+            Memory: 100000000,
+            CpuPeriod: 100000,
+            CpuQuota:   20000,
+          }
+        }, function (err, container) {
+          container.start(function (err, data) {
+            container.inspect(container.id).then(data => {
+              const IPAddress = data.NetworkSettings.IPAddress
+              console.log(IPAddress)
+              sessions[sessionId] = IPAddress
+              proxy.register(`${sessionId}.${DOMAIN}`, `${IPAddress}:${PORT}`)
+            })
+          })
+        })
+        // console.log(containerNetwork + '')
+        
+        // console.log(`sessionId is ${sessionId}`)
       }
     }
   ]
 })
-
-const DOMAIN = 'spacecraft-repl.com'
-const PORT   = 3000
 
 // let sessions = [
 //   {
@@ -39,15 +59,12 @@ const PORT   = 3000
 //   },
 // ]
 
-let sessions = {
-  [`a.${DOMAIN}`]: `172.17.0.2:${PORT}`,
-  [`b.${DOMAIN}`]: `172.17.0.3:${PORT}`
-}
 
-const registerSessionRoute = ({src, target}) => {
-  proxy.register(src, target)
-}
+// const registerSessionRoute = ({src, target}) => {
+//   proxy.register(src, target)
+// }
 
-Object.entries(sessions).forEach( ([src, target]) => {
-  proxy.register(src, target)
-})
+// Object.entries(sessions).forEach( ([src, target]) => {
+//   proxy.register(src, target)
+// })
+
