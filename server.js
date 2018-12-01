@@ -13,7 +13,7 @@ const proxy = require('redbird')({
       if(host === 'spacecraft-repl.com' && url === '/') {
         let sessionId = Math.floor(Math.random() * 1000)
         let containerNetwork = execFileSync('./dockerscript.sh')
-        console.log(containerNetwork)
+        console.log(containerNetwork + '')
         // docker.run('proxy-fix', ['--memory=100m', '-it', '--cpus=".2"','--runtime=runsc', '--expose=3000', '-d'], process.stdout, function (err, data, container) {
         //   // console.log(`data.StatusCode is ${data.StatusCode}}`)
         //   console.log(`data is ${data}`)
