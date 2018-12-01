@@ -36,8 +36,8 @@ const proxy = require('redbird')({
             })
           })  
         })
-        console.log(`${sessions[sessionId]}:${PORT}`)
-        return `${sessionId}.${DOMAIN}`
+        // console.log(`${sessions[sessionId]}:${PORT}`)
+        return ({url:`${sessionId}.${DOMAIN}` , path: '', opts: {}})
       }
     }
   ]
