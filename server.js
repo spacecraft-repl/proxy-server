@@ -6,7 +6,10 @@ const proxy = require('redbird')({
   port: 80,
   resolvers: [
     function(host, url, request) {
-      console.log(`host is ${host} and url is ${url}`);
+      // console.log(`host is ${host} and url is ${url}`);
+      if(host === 'spacecraft-repl.com' && url === '/') {
+        console.log(`Random number ${Math.random()}`)
+      }
     }
   ]
 })
