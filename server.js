@@ -1,4 +1,4 @@
-'use strict'
+// 'use strict'
 
 const proxy = require('redbird')({
   port: 80,
