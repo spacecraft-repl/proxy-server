@@ -28,9 +28,7 @@ const proxy = require('redbird')({
           container.start(function (err, data) {
             container.inspect(container.id).then(data => {
               const IPAddress = data.NetworkSettings.IPAddress
-              console.log(`IPAddress is ${IPAddress}`)
               sessions[sessionId] = IPAddress
-              console.log(`sessionId is ${sessionId}`)
               proxy.register(`${sessionId}.${DOMAIN}`, `${IPAddress}:${PORT}`)
             })
           })
