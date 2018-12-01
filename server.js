@@ -9,8 +9,8 @@ const proxy = require('redbird')({
   resolvers: [
     function(host, url, request) {
       // console.log(`host is ${host} and url is ${url}`);
-      if(host === 'localhost') {
-      // if(host === 'spacecraft-repl.com' && url === '/') {
+      // if(host === 'localhost') {
+      if(host === 'spacecraft-repl.com' && url === '/') {
         let sessionId = Math.floor(Math.random() * 1000)
         execFileSync('./dockerscript.sh')
         // docker.run('proxy-fix', ['--memory=100m', '-it', '--cpus=".2"','--runtime=runsc', '--expose=3000', '-d'], process.stdout, function (err, data, container) {
