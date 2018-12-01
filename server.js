@@ -1,6 +1,6 @@
 // 'use strict'
 const Docker = require('dockerode')
-// let docker1 = new Docker({ host: 'http://174.138.50.119', port: 80 })
+let docker = new Docker({socketPath: '/var/run/docker.sock'})
 
 const proxy = require('redbird')({
   port: 80,
@@ -8,7 +8,12 @@ const proxy = require('redbird')({
     function(host, url, request) {
       // console.log(`host is ${host} and url is ${url}`);
       if(host === 'spacecraft-repl.com' && url === '/') {
-        console.log(`Random number ${Math.random()}`)
+        let sessionId = Math.floor(Math.random() * 1000)
+        docker.run('proxy-fix', ['--memory=100m', '-it', '--cpus=".2"','--runtime=runsc', '--expose=3000', '-d'], process.stdout, function (err, data, container) {
+          console.log(`data.StatusCode is ${data.StatusCode}}`)
+          console.log(`data is ${data}`)
+        });
+        console.log(`sessionId is ${sessionId}`)
       }
     }
   ]
