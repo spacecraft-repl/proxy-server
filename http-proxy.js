@@ -4,7 +4,7 @@ const Docker = require('dockerode')
 let docker = new Docker({ socketPath: '/var/run/docker.sock' })
 
 const containerOpts = {
-  Image: 'non-root',
+  Image: 'signal-teardown-delete',
   Tty: false,
   ExposedPorts: { "3000/tcp": {} },
   HostConfig: {
@@ -24,6 +24,10 @@ const proxy = httpProxy.createProxyServer({
 });
 
 const proxyServer = http.createServer(async (req, res) => {
+  if (req.method === 'DELETE') {
+    console.log(req.headers.host)
+  }
+
   if (req.headers.host === ROOT) {
     let sessionId = Math.floor(Math.random() * 1000)
 
