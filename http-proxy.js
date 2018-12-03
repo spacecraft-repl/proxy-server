@@ -16,10 +16,7 @@ const containerOpts = {
 }
 const ROOT = 'spacecraft-repl.com'
 const PORT = 3000
-let sessions = {
-  'first.spacecraft-repl.com': 'http://172.17.0.2:3000',
-  'second.spacecraft-repl.com': 'http://172.17.0.3:3000',
-}
+let sessions = {}
 
 const proxy = httpProxy.createProxyServer({
   ws: true,
@@ -31,7 +28,7 @@ const proxyServer = http.createServer(async (req, res) => {
     let sessionId = Math.floor(Math.random() * 1000)
 
     await new Promise((resolve, reject) => {
-      docker.createContainer(containerOpts, function (err, container) {
+      docker.createContainer(containerOpts, (err, container) => {
         container.start((err, data) => {
           container.inspect(container.id).then(data => {
             const IPAddress = data.NetworkSettings.IPAddress
@@ -42,7 +39,7 @@ const proxyServer = http.createServer(async (req, res) => {
       })
     })
 
-    res.writeHead(301, { 
+    res.writeHead(301, {
       'Location': `http://${sessionId}.${ROOT}`,
       'Cache-Control': 'no-cache'
     })
@@ -54,7 +51,7 @@ const proxyServer = http.createServer(async (req, res) => {
     return res.end()
   }
 
-  proxy.web(req, res, { target: sessions[req.headers.host] }, 
+  proxy.web(req, res, { target: sessions[req.headers.host] },
     (e) => log_error(e, req)
   );
 });
@@ -63,13 +60,13 @@ proxyServer.on('upgrade', (req, socket, head) => {
   proxy.ws(req, socket, head, { target: sessions[req.headers.host] });
 });
 
-proxyServer.listen(80);
-
 docker.listContainers((err, containers) => {
   containers.forEach((containerInfo) => {
-    docker.getContainer(containerInfo.Id).stop(() => console.log(containerInfo.Id));
+    docker.getContainer(containerInfo.Id).kill(() => console.log(containerInfo.Id));
   });
 });
+
+proxyServer.listen(80);
 
 function log_error(e,req){
   if(e){
