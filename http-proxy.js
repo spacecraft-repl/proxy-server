@@ -42,8 +42,8 @@ const proxyServer = http.createServer(async (req, res) => {
           container.inspect(container.id).then(data => {
             const IPAddress = data.NetworkSettings.IPAddress
             sessions[sessionId + '.' + ROOT] = {
-							ip: `http://${IPAddress}:${PORT}`,
- 							containerId: container.id
+              ip: `http://${IPAddress}:${PORT}`,
+							containerId: container.id
 						}
 						console.log(container.id)
             setTimeout(() => resolve(), 3000)
