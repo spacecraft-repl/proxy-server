@@ -4,7 +4,7 @@ const Docker = require('dockerode')
 let docker = new Docker({ socketPath: '/var/run/docker.sock' })
 
 const containerOpts = {
-  Image: 'proxy-fix',
+  Image: 'non-root',
   Tty: false,
   ExposedPorts: { "3000/tcp": {} },
   HostConfig: {
@@ -28,15 +28,21 @@ const proxyServer = http.createServer(async (req, res) => {
     let sessionId = Math.floor(Math.random() * 1000)
 
     await new Promise((resolve, reject) => {
+
       docker.createContainer(containerOpts, (err, container) => {
+
         container.start((err, data) => {
+
           container.inspect(container.id).then(data => {
             const IPAddress = data.NetworkSettings.IPAddress
             sessions[sessionId + '.' + ROOT] = `http://${IPAddress}:${PORT}`
             setTimeout(() => resolve(), 3000)
           })
+
         })
+
       })
+
     })
 
     res.writeHead(301, {
