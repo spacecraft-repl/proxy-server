@@ -1,10 +1,11 @@
 const httpProxy = require('http-proxy')
 const http = require('http')
+const uuidv4 = require('uuid/v4')
 const Docker = require('dockerode')
 let docker = new Docker({ socketPath: '/var/run/docker.sock' })
 
 const containerOpts = {
-  Image: 'proxy-fix',
+  Image: 'signal-teardown-delete',
   Tty: false,
   ExposedPorts: { "3000/tcp": {} },
   HostConfig: {
@@ -16,10 +17,7 @@ const containerOpts = {
 }
 const ROOT = 'spacecraft-repl.com'
 const PORT = 3000
-let sessions = {
-  'first.spacecraft-repl.com': 'http://172.17.0.2:3000',
-  'second.spacecraft-repl.com': 'http://172.17.0.3:3000',
-}
+let sessions = {}
 
 const proxy = httpProxy.createProxyServer({
   ws: true,
@@ -27,22 +25,37 @@ const proxy = httpProxy.createProxyServer({
 });
 
 const proxyServer = http.createServer(async (req, res) => {
+  if (req.method === 'DELETE') {
+    const containerId = sessions[req.headers.host].containerId
+	  docker.getContainer(containerId).remove({ force: true })
+  }
+
   if (req.headers.host === ROOT) {
-    let sessionId = Math.floor(Math.random() * 1000)
+    let sessionId = uuidv4().slice(0, 6)
 
     await new Promise((resolve, reject) => {
-      docker.createContainer(containerOpts, function (err, container) {
+
+      docker.createContainer(containerOpts, (err, container) => {
+
         container.start((err, data) => {
+
           container.inspect(container.id).then(data => {
             const IPAddress = data.NetworkSettings.IPAddress
-            sessions[sessionId + '.' + ROOT] = `http://${IPAddress}:${PORT}`
+            sessions[sessionId + '.' + ROOT] = {
+							ip: `http://${IPAddress}:${PORT}`,
+ 							containerId: container.id
+						}
+						console.log(container.id)
             setTimeout(() => resolve(), 3000)
           })
+
         })
+
       })
+
     })
 
-    res.writeHead(301, { 
+    res.writeHead(301, {
       'Location': `http://${sessionId}.${ROOT}`,
       'Cache-Control': 'no-cache'
     })
@@ -54,27 +67,30 @@ const proxyServer = http.createServer(async (req, res) => {
     return res.end()
   }
 
-  proxy.web(req, res, { target: sessions[req.headers.host] }, 
+  proxy.web(
+    req,
+    res,
+    { target: sessions[req.headers.host].ip },
     (e) => log_error(e, req)
   );
 });
 
 proxyServer.on('upgrade', (req, socket, head) => {
-  proxy.ws(req, socket, head, { target: sessions[req.headers.host] });
+  proxy.ws(req, socket, head, { target: sessions[req.headers.host].ip });
+});
+
+docker.listContainers((err, containers) => {
+  containers.forEach((containerInfo) => {
+		docker.getContainer(containerInfo.Id).remove({ force: true })
+  });
 });
 
 proxyServer.listen(80);
 
-docker.listContainers((err, containers) => {
-  containers.forEach((containerInfo) => {
-    docker.getContainer(containerInfo.Id).stop(() => console.log(containerInfo.Id));
-  });
-});
-
 function log_error(e,req){
   if(e){
     console.error(e.message);
-    console.log(req.headers.host,'-->', sessions[req.headers.host]);
+    console.log(req.headers.host,'-->', sessions[req.headers.host].ip);
     console.log('-----');
   }
 }

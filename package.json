@@ -17,7 +17,6 @@
   },
   "homepage": "https://github.com/spacecraft-repl/proxy-server#readme",
   "dependencies": {
-    "dockerode": "^2.5.7",
-    "redbird": "^0.9.0"
+    "dockerode": "^2.5.7"
   }
 }
