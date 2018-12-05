@@ -18,6 +18,7 @@ const containerOpts = {
 const ROOT = 'spacecraft-repl.com'
 const PORT = 3000
 let sessions = {}
+let isPendingStart = false
 
 const proxy = httpProxy.createProxyServer({
   ws: true,
@@ -31,11 +32,17 @@ const proxyServer = http.createServer(async (req, res) => {
   }
 
   if (req.headers.host === ROOT) {
+		if (isPendingStart) {
+	    res.writeHead(429)
+	    return res.end()
+		}
+
     let sessionId = uuidv4().slice(0, 6)
 
     await new Promise((resolve, reject) => {
 
       docker.createContainer(containerOpts, (err, container) => {
+				isPendingStart = true
 
         container.start((err, data) => {
 
@@ -46,7 +53,10 @@ const proxyServer = http.createServer(async (req, res) => {
 							containerId: container.id
 						}
 						console.log(container.id)
-            setTimeout(() => resolve(), 3000)
+            setTimeout(() => {
+							isPendingStart = false
+							resolve()
+						}, 3000)
           })
 
         })
