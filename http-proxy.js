@@ -32,17 +32,17 @@ const proxyServer = http.createServer(async (req, res) => {
   }
 
   if (req.headers.host === ROOT) {
-		if (isPendingStart) {
-	    res.writeHead(429)
-	    return res.end()
-		}
+    if (isPendingStart) {
+      res.writeHead(429)
+      return res.end()
+    }
 
     let sessionId = uuidv4().slice(0, 6)
 
     await new Promise((resolve, reject) => {
 
       docker.createContainer(containerOpts, (err, container) => {
-				isPendingStart = true
+        isPendingStart = true
 
         container.start((err, data) => {
 
@@ -50,13 +50,13 @@ const proxyServer = http.createServer(async (req, res) => {
             const IPAddress = data.NetworkSettings.IPAddress
             sessions[sessionId + '.' + ROOT] = {
               ip: `http://${IPAddress}:${PORT}`,
-							containerId: container.id
-						}
+              containerId: container.id
+            }
 						console.log(container.id)
             setTimeout(() => {
-							isPendingStart = false
-							resolve()
-						}, 3000)
+              isPendingStart = false
+              resolve()
+            }, 3000)
           })
 
         })
