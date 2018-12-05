@@ -29,6 +29,9 @@ const proxyServer = http.createServer(async (req, res) => {
   if (req.method === 'DELETE') {
     const containerId = sessions[req.headers.host].containerId
 	  docker.getContainer(containerId).remove({ force: true })
+    delete sessions[req.headers.host]
+    res.writeHead(202)
+    return res.end('DELETED')
   }
 
   if (req.headers.host === ROOT) {
@@ -48,13 +51,24 @@ const proxyServer = http.createServer(async (req, res) => {
 
           container.inspect(container.id).then(data => {
             const IPAddress = data.NetworkSettings.IPAddress
-            sessions[sessionId + '.' + ROOT] = {
-              ip: `http://${IPAddress}:${PORT}`,
+            const containerURL = `http://${IPAddress}:${PORT}`
+            const sessionURL = sessionId + '.' + ROOT
+
+            sessions[sessionURL] = {
+              ip: containerURL,
               containerId: container.id
             }
+
 						console.log(container.id)
+
             setTimeout(() => {
               isPendingStart = false
+              const fetch = require('node-fetch')
+              fetch(containerURL, { 
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ sessionURL })
+              })
               resolve()
             }, 3000)
           })
