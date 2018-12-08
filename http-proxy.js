@@ -18,6 +18,7 @@ const containerOpts = {
 const ROOT = 'spacecraft-repl.com'
 const PORT = 3000
 let sessions = {}
+let isPendingStart = false
 
 const proxy = httpProxy.createProxyServer({
   ws: true,
@@ -28,25 +29,48 @@ const proxyServer = http.createServer(async (req, res) => {
   if (req.method === 'DELETE') {
     const containerId = sessions[req.headers.host].containerId
 	  docker.getContainer(containerId).remove({ force: true })
+    delete sessions[req.headers.host]
+    res.writeHead(202)
+    return res.end('DELETED')
   }
 
   if (req.headers.host === ROOT) {
+    if (isPendingStart) {
+      res.writeHead(429)
+      return res.end()
+    }
+
     let sessionId = uuidv4().slice(0, 6)
 
     await new Promise((resolve, reject) => {
 
       docker.createContainer(containerOpts, (err, container) => {
+        isPendingStart = true
 
         container.start((err, data) => {
 
           container.inspect(container.id).then(data => {
             const IPAddress = data.NetworkSettings.IPAddress
-            sessions[sessionId + '.' + ROOT] = {
-              ip: `http://${IPAddress}:${PORT}`,
-							containerId: container.id
-						}
+            const containerURL = `http://${IPAddress}:${PORT}`
+            const sessionURL = sessionId + '.' + ROOT
+
+            sessions[sessionURL] = {
+              ip: containerURL,
+              containerId: container.id
+            }
+
 						console.log(container.id)
-            setTimeout(() => resolve(), 3000)
+
+            setTimeout(() => {
+              isPendingStart = false
+              const fetch = require('node-fetch')
+              fetch(containerURL, { 
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ sessionURL })
+              })
+              resolve()
+            }, 3000)
           })
 
         })

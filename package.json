@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/spacecraft-repl/proxy-server#readme",
   "dependencies": {
-    "dockerode": "^2.5.7"
+    "dockerode": "^2.5.7",
+    "http-proxy": "^1.17.0",
+    "node-fetch": "^2.3.0",
+    "uuid": "^3.3.2"
   }
 }
