@@ -28,7 +28,7 @@ const proxy = httpProxy.createProxyServer({
 const proxyServer = http.createServer(async (req, res) => {
   if (req.method === 'DELETE') {
     const containerId = sessions[req.headers.host].containerId
-	  docker.getContainer(containerId).remove({ force: true })
+    docker.getContainer(containerId).remove({ force: true })
     delete sessions[req.headers.host]
     res.writeHead(202)
     return res.end('DELETED')
@@ -59,10 +59,11 @@ const proxyServer = http.createServer(async (req, res) => {
               containerId: container.id
             }
 
-						console.log(container.id)
+            console.log(container.id)
 
             setTimeout(() => {
               isPendingStart = false
+              
               const fetch = require('node-fetch')
               fetch(containerURL, { 
                 method: 'POST',
@@ -105,7 +106,7 @@ proxyServer.on('upgrade', (req, socket, head) => {
 
 docker.listContainers((err, containers) => {
   containers.forEach((containerInfo) => {
-		docker.getContainer(containerInfo.Id).remove({ force: true })
+    docker.getContainer(containerInfo.Id).remove({ force: true })
   });
 });
 
