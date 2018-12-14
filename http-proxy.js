@@ -5,12 +5,12 @@ const Docker = require('dockerode')
 let docker = new Docker({ socketPath: '/var/run/docker.sock' })
 
 const containerOpts = {
-  Image: 'signal-teardown-delete',
+  Image: 'gzip-fix-4',
   Tty: false,
   ExposedPorts: { "3000/tcp": {} },
   HostConfig: {
     Runtime: 'runsc',
-    Memory: 100000000,
+    Memory: 50000000,
     CpuPeriod: 100000,
     CpuQuota:   20000,
   }
@@ -48,6 +48,7 @@ const proxyServer = http.createServer(async (req, res) => {
         isPendingStart = true
 
         container.start((err, data) => {
+          if (err) console.log(err);
 
           container.inspect(container.id).then(data => {
             const IPAddress = data.NetworkSettings.IPAddress
@@ -64,13 +65,13 @@ const proxyServer = http.createServer(async (req, res) => {
             setTimeout(() => {
               isPendingStart = false
               const fetch = require('node-fetch')
-              fetch(containerURL, { 
+              fetch(containerURL, {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ sessionURL })
               })
               resolve()
-            }, 3000)
+            }, 5000)
           })
 
         })
