@@ -5,7 +5,7 @@ const Docker = require('dockerode')
 let docker = new Docker({ socketPath: '/var/run/docker.sock' })
 
 const containerOpts = {
-  Image: 'gzip-fix-4',
+  Image: 'production-12-14',
   Tty: false,
   ExposedPorts: { "3000/tcp": {} },
   HostConfig: {
@@ -15,10 +15,10 @@ const containerOpts = {
     CpuQuota:   20000,
   }
 }
-const ROOT = 'spacecraft-repl.com'
+const ROOT = 'repl.space'
 const PORT = 3000
 let sessions = {}
-let isPendingStart = false
+// let isPendingStart = false
 
 const proxy = httpProxy.createProxyServer({
   ws: true,
@@ -35,17 +35,17 @@ const proxyServer = http.createServer(async (req, res) => {
   }
 
   if (req.headers.host === ROOT) {
-    if (isPendingStart) {
-      res.writeHead(429)
-      return res.end()
-    }
+    // if (isPendingStart) {
+    //  res.writeHead(429)
+    //  return res.end('<html><body>Too many requests, please try again</body></html>')
+    //}
 
     let sessionId = uuidv4().slice(0, 6)
 
     await new Promise((resolve, reject) => {
 
       docker.createContainer(containerOpts, (err, container) => {
-        isPendingStart = true
+        // isPendingStart = true
 
         container.start((err, data) => {
           if (err) console.log(err);
@@ -60,12 +60,12 @@ const proxyServer = http.createServer(async (req, res) => {
               containerId: container.id
             }
 
-						console.log(container.id)
+	    console.log(container.id)
 
             setTimeout(() => {
-              isPendingStart = false
+              // isPendingStart = false
               const fetch = require('node-fetch')
-              fetch(containerURL, {
+              fetch(containerURL + '/session', {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ sessionURL })
