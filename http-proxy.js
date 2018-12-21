@@ -2,6 +2,7 @@ const httpProxy = require('http-proxy')
 const http = require('http')
 const uuidv4 = require('uuid/v4')
 const Docker = require('dockerode')
+const fs = require('fs')
 let docker = new Docker({ socketPath: '/var/run/docker.sock' })
 
 const containerOpts = {
@@ -26,6 +27,12 @@ const proxy = httpProxy.createProxyServer({
 });
 
 const proxyServer = http.createServer(async (req, res) => {
+  if (req.url === '/loading.gif') { 
+    const img = fs.readFileSync('assets/loading.gif');
+    res.writeHead(200, { 'Content-Type': 'image/gif' });
+    res.end(img, 'binary');
+  }
+
   if (req.method === 'DELETE') {
     const containerId = sessions[req.headers.host].containerId
     docker.getContainer(containerId).remove({ force: true })
@@ -47,7 +54,7 @@ const proxyServer = http.createServer(async (req, res) => {
 
     let sessionId = uuidv4().slice(0, 6)
 
-    const template = require('fs').readFileSync('assets/redirect.html', { encoding: 'utf-8' })
+    const template = fs.readFileSync('assets/redirect.html', { encoding: 'utf-8' })
     const html = template.replace('${}', `http://${sessionId}.${ROOT}`)
     res.setHeader('content-type', 'text/html')
     res.end(html)
