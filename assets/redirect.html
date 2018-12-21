@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <title>SpaceCraft | Loading...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="4;url=${}" />
+  <!-- <meta http-equiv="refresh" content="4;url=${}" /> -->
   <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Roboto:900" rel="stylesheet">
   <link rel="shortcut icon" type="image/png" href="https://i.imgur.com/AcDlc2L.png" />
@@ -35,11 +35,21 @@
       color: #ffffff;
     }
 
+    h1:after {
+      content: "...";
+    }
+
     p {
       font-family: "Roboto Mono", monospace;
       font-weight: 400;
       font-size: 16px;
+      line-height: 20px;
+      margin-top: 10px;
       margin-bottom: 50px;
+    }
+
+    p:before {
+      content: "Please wait while ";
     }
 
     img {
@@ -52,18 +62,27 @@
       }
 
       h1 {
-        font-size: 40px;
+        font-size: 32px;
+      }
+
+      h1:after {
+        content: "";
       }
 
       p {
-        font-size: 12px;
+        font-size: 14px;
+        letter-spacing: -0.3px;
+      }
+
+      img {
+        max-width: 140px;
       }
     }
   </style>
 </head>
 <body>
   <img src="https://i.imgur.com/Xh4caFy.gif" alt="spacecraft loading"/>
-  <h1>Launching SpaceCraft...</h1>
-  <p>Please wait while your request is being redirected.</p>
+  <h1>Launching SpaceCraft</h1>
+  <p>your request is being redirected.</p>
 </body>
 </html>
