@@ -34,6 +34,11 @@ const proxyServer = http.createServer(async (req, res) => {
     return res.end('DELETED')
   }
 
+  if (!sessions[req.headers.host]) {
+    res.writeHead(404)
+    return res.end()
+  }  
+
   if (req.headers.host === ROOT) {
     // if (isPendingStart) {
     //   res.writeHead(429)
@@ -82,11 +87,6 @@ const proxyServer = http.createServer(async (req, res) => {
     //   'Location': `http://${sessionId}.${ROOT}`,
     //   'Cache-Control': 'no-cache'
     // })
-  }
-
-  if (!sessions[req.headers.host]) {
-    res.writeHead(404)
-    return res.end()
   }
 
   proxy.web(
