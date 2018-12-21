@@ -42,6 +42,11 @@ const proxyServer = http.createServer(async (req, res) => {
 
     let sessionId = uuidv4().slice(0, 6)
 
+    const template = require('fs').readFileSync('assets/redirect.html', { encoding: 'utf-8' })
+    const html = template.replace('${}', `http://${sessionId}.${ROOT}`)
+    res.setHeader('content-type', 'text/html')
+    res.end(html)
+
     docker.createContainer(containerOpts, (err, container) => {
       // isPendingStart = true
 
@@ -77,10 +82,6 @@ const proxyServer = http.createServer(async (req, res) => {
     //   'Location': `http://${sessionId}.${ROOT}`,
     //   'Cache-Control': 'no-cache'
     // })
-    const template = require('fs').readFileSync('assets/redirect.html', { encoding: 'utf-8' })
-    const html = template.replace('${}', `http://${sessionId}.${ROOT}`)
-    res.setHeader('content-type', 'text/html')
-    return res.end(html)
   }
 
   if (!sessions[req.headers.host]) {
