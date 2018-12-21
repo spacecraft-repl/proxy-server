@@ -10,78 +10,137 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto:900" rel="stylesheet">
   <link rel="shortcut icon" type="image/png" href="https://i.imgur.com/AcDlc2L.png" />
   <style>
-    * {
-      padding: 0;
-      margin: 0;
-      box-sizing: border-box;
-    }
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
 
-    body {
-      font-family: Roboto, Helvetica, Arial, san-serif;
-      height: 100vh;
-      width: 100vw;
-      padding: 0 20px;
-      background-color: #435169;
-      color: #b9c1cb;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
+body {
+  font-family: Roboto, Helvetica, Arial, san-serif;
+  height: 100vh;
+  width: 100vw;
+  padding: 0 20px;
+  background-color: #435169;
+  color: #b9c1cb;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
-    h1 {
-      font-weight: 900;
-      font-size: 45px;
-      color: #ffffff;
-    }
+h1 {
+  font-weight: 900;
+  font-size: 45px;
+  color: #ffffff;
+}
 
-    h1:after {
-      content: "...";
-    }
+h1:after {
+  content: "...";
+}
 
-    p {
-      font-family: "Roboto Mono", monospace;
-      font-weight: 400;
-      font-size: 16px;
-      line-height: 20px;
-      margin-top: 10px;
-      margin-bottom: 50px;
-    }
+p {
+  font-family: "Roboto Mono", monospace;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 20px;
+  margin-top: 10px;
+  margin-bottom: 50px;
+}
 
-    p:before {
-      content: "Please wait while ";
-    }
+p:before {
+  content: "Please wait while ";
+}
 
-    img {
-      max-width: 200px;
-    }
+img {
+  animation: moveUpDown 0.8s ease-in-out infinite;
+  position: relative;
+  max-width: 180px;
+}
 
-    @media screen and (max-width: 640px) {
-      body {
-        text-align: center;
-      }
+.img-wrapper {
+  height: 230px;
+  width: 180px;
+}
 
-      h1 {
-        font-size: 32px;
-      }
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+  height: 25px;
+  width: 150px;
+}
 
-      h1:after {
-        content: "";
-      }
+#shadow {
+  animation: shrinkExpand 0.8s ease-in-out infinite;
+  height: 100%;
+  width: 100%;
+  background-color: #353c4e;
+  border-radius: 100%;
+}
 
-      p {
-        font-size: 14px;
-        letter-spacing: -0.3px;
-      }
+@keyframes moveUpDown {
+  0%, 100% {
+    bottom: 0;
+  }
+  50% {
+    bottom: 15%;
+  }
+}
 
-      img {
-        max-width: 140px;
-      }
-    }
+@keyframes shrinkExpand {
+  0%, 100% {
+    height: 100%;
+    width: 100%;
+  }
+  50% {
+    height: 80%;
+    width: 80%;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  body {
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 32px;
+  }
+
+  h1:after {
+    content: "";
+  }
+
+  p {
+    font-size: 14px;
+    letter-spacing: -0.3px;
+  }
+
+  img {
+    max-width: 140px;
+  }
+
+  .img-wrapper {
+    height: 180px;
+    width: 150px;
+  }
+
+  .wrapper {
+    height: 20px;
+    width: 120px;
+  }
+}
   </style>
 </head>
 <body>
-  <img src="https://i.imgur.com/Xh4caFy.gif" alt="spacecraft loading"/>
+  <div class="img-wrapper">
+    <img src="https://i.imgur.com/WmWSxaA.png" />
+  </div>
+  <div class="wrapper">
+    <div id="shadow"></div>
+  </div>
   <h1>Launching SpaceCraft</h1>
   <p>your request is being redirected.</p>
 </body>
