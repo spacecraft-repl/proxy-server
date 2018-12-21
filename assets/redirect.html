@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>SpaceCraft | Loading...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="4;url=${}" />
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:900" rel="stylesheet">
+  <link rel="shortcut icon" type="image/png" href="favicon.ico" />
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Roboto, Helvetica, Arial, san-serif;
+      height: 100vh;
+      width: 100vw;
+      padding: 0 20px;
+      background-color: #435169;
+      color: #b9c1cb;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    h1 {
+      font-weight: 900;
+      font-size: 45px;
+      color: #ffffff;
+    }
+
+    p {
+      font-family: "Roboto Mono", monospace;
+      font-weight: 400;
+      font-size: 16px;
+      margin-bottom: 50px;
+    }
+
+    img {
+      max-width: 200px;
+    }
+
+    @media screen and (max-width: 640px) {
+      body {
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 40px;
+      }
+
+      p {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <img src="loading.gif" />
+  <h1>Launching SpaceCraft...</h1>
+  <p>Please wait while your request is being redirected.</p>
+</body>
+</html>
