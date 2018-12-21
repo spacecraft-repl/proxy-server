@@ -34,10 +34,10 @@ const proxyServer = http.createServer(async (req, res) => {
     return res.end('DELETED')
   }
 
-  if (!sessions[req.headers.host]) {
+  if (req.headers.host !== ROOT && !sessions[req.headers.host]) {
     res.writeHead(404)
     return res.end()
-  }  
+  }
 
   if (req.headers.host === ROOT) {
     // if (isPendingStart) {
