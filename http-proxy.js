@@ -82,7 +82,7 @@ const proxyServer = http.createServer(async (req, res) => {
         })
       })
     })
-
+    return
     // res.writeHead(301, {
     //   'Location': `http://${sessionId}.${ROOT}`,
     //   'Cache-Control': 'no-cache'
