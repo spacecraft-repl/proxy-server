@@ -42,42 +42,35 @@ const proxyServer = http.createServer(async (req, res) => {
 
     let sessionId = uuidv4().slice(0, 6)
 
-    await new Promise((resolve, reject) => {
+    docker.createContainer(containerOpts, (err, container) => {
+      // isPendingStart = true
 
-      docker.createContainer(containerOpts, (err, container) => {
-        // isPendingStart = true
+      container.start((err, data) => {
+        if (err) console.log(err);
 
-        container.start((err, data) => {
-          if (err) console.log(err);
+        container.inspect(container.id).then(data => {
+          const IPAddress = data.NetworkSettings.IPAddress
+          const containerURL = `http://${IPAddress}:${PORT}`
+          const sessionURL = sessionId + '.' + ROOT
 
-          container.inspect(container.id).then(data => {
-            const IPAddress = data.NetworkSettings.IPAddress
-            const containerURL = `http://${IPAddress}:${PORT}`
-            const sessionURL = sessionId + '.' + ROOT
+          sessions[sessionURL] = {
+            ip: containerURL,
+            containerId: container.id
+          }
 
-            sessions[sessionURL] = {
-              ip: containerURL,
-              containerId: container.id
-            }
+					console.log(container.id)
 
-						console.log(container.id)
-
-            setTimeout(() => {
-              // isPendingStart = false
-              const fetch = require('node-fetch')
-              fetch(containerURL + '/session', {
-                method: 'POST',
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ sessionURL })
-              })
-              resolve()
-            }, 5000)
-          })
-
+          setTimeout(() => {
+            // isPendingStart = false
+            const fetch = require('node-fetch')
+            fetch(containerURL + '/session', {
+              method: 'POST',
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ sessionURL })
+            })
+          }, 5000)
         })
-
       })
-
     })
 
     // res.writeHead(301, {
