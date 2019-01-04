@@ -47,7 +47,7 @@ const proxyServer = http.createServer(async (req, res) => {
 
     let sessionId = uuidv4().slice(0, 6)
 
-    const template = require('fs').readFileSync('assets/redirect.html', { encoding: 'utf-8' })
+    const template = require('fs').readFileSync(__dirname + '/assets/redirect.html', { encoding: 'utf-8' })
     const html = template.replace('${}', `http://${sessionId}.${ROOT}`)
     res.setHeader('content-type', 'text/html')
     res.end(html)
