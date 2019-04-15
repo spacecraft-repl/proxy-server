@@ -1,5 +1,6 @@
 const httpProxy = require('http-proxy')
-const http = require('http')
+const fs = require('fs')
+const https = require('https')
 const uuidv4 = require('uuid/v4')
 const Docker = require('dockerode')
 let docker = new Docker({ socketPath: '/var/run/docker.sock' })
@@ -20,12 +21,18 @@ const PORT = 3000
 let sessions = {}
 // let isPendingStart = false
 
+const options = {
+  key: fs.readFileSync('/etc/letsencrypt/live/repl.space-0001/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/repl.space-0001/fullchain.pem'),
+};
+
 const proxy = httpProxy.createProxyServer({
+  secure: true,
   ws: true,
   followRedirects: true,
 });
 
-const proxyServer = http.createServer(async (req, res) => {
+const proxyServer = https.createServer(options, async (req, res) => {
   if (req.method === 'DELETE') {
     const containerId = sessions[req.headers.host].containerId
     docker.getContainer(containerId).remove({ force: true })
@@ -48,7 +55,7 @@ const proxyServer = http.createServer(async (req, res) => {
     let sessionId = uuidv4().slice(0, 6)
 
     const template = require('fs').readFileSync(__dirname + '/assets/redirect.html', { encoding: 'utf-8' })
-    const html = template.replace('${}', `http://${sessionId}.${ROOT}`)
+    const html = template.replace('${}', `https://${sessionId}.${ROOT}`)
     res.setHeader('content-type', 'text/html')
     res.end(html)
 
@@ -84,7 +91,7 @@ const proxyServer = http.createServer(async (req, res) => {
     })
     return
     // res.writeHead(301, {
-    //   'Location': `http://${sessionId}.${ROOT}`,
+    //   'Location': `https://${sessionId}.${ROOT}`,
     //   'Cache-Control': 'no-cache'
     // })
   }
@@ -107,7 +114,7 @@ docker.listContainers((err, containers) => {
   });
 });
 
-proxyServer.listen(80);
+proxyServer.listen(443);
 
 function log_error(e,req){
   if(e){
