@@ -1,6 +1,7 @@
 const httpProxy = require('http-proxy')
 const fs = require('fs')
 const https = require('https')
+const http = require('http')
 const uuidv4 = require('uuid/v4')
 const Docker = require('dockerode')
 let docker = new Docker({ socketPath: '/var/run/docker.sock' })
@@ -34,6 +35,7 @@ const proxy = httpProxy.createProxyServer({
 
 const proxyServer = https.createServer(options, async (req, res) => {
   if (req.method === 'DELETE') {
+    console.log(sessions, req.headers)
     const containerId = sessions[req.headers.host].containerId
     docker.getContainer(containerId).remove({ force: true })
     delete sessions[req.headers.host]
@@ -115,6 +117,22 @@ docker.listContainers((err, containers) => {
 });
 
 proxyServer.listen(443);
+
+http.createServer((req, res) => {
+  // enable http deletes
+  if (req.method === 'DELETE') {
+    console.log(sessions, req.headers)
+    const containerId = sessions[req.headers.host].containerId
+    docker.getContainer(containerId).remove({ force: true })
+    delete sessions[req.headers.host]
+    
+    res.writeHead(202)
+    return res.end('DELETED')
+  }
+
+  res.writeHead(301, { 'Location': 'https://' + req.headers.host })
+  res.end()
+}).listen(80)
 
 function log_error(e,req){
   if(e){
