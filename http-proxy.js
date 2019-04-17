@@ -77,7 +77,7 @@ const proxyServer = https.createServer(options, async (req, res) => {
             containerId: container.id
           }
 
-					console.log(container.id)
+	  console.log(container.id) // log container ID to console upon initialization
 
           setTimeout(() => {
             // isPendingStart = false
